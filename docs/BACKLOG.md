@@ -1,19 +1,60 @@
 # BACKLOG.md
 
-> Single source of work.
-> Review regularly.
-> Top item is next.
+> Execution space. #NNN identifiers are **permanent** — they never change.
+> Items promoted from IDEAS.md get the next available #NNN.
+
+## Workflow
+
+```
+IDEAS.md (gitignored)                    BACKLOG.md (tracked)
+┌─────────────────────────┐              ┌─────────────────────────┐
+│ IDEA-042 (ephemeral)    │  PROMOTE ──► │ #015 (permanent)        │
+│                         │              │                         │
+│ (deleted after promote) │              │ Moves: BACKLOG→NOW→DONE │
+└─────────────────────────┘              └─────────────────────────┘
+```
+
+**Sections = Status:** BACKLOG (planned) → NOW (active) → DONE (complete)
+**Checkbox = Micro-status:** `[ ]` not started, `[/]` in progress, `[x]` done, `[?]` blocked, `[-]` canceled
+
+---
+
+## Next Available: #003
+
+---
+
+## ROADMAP
+
+Thematic goals (tag backlog items with these):
+
+- RM1 — Core dashboard functionality
+- RM2 — UI/UX polish and accessibility
+- RM3 — Deployment and remote access
+
+---
+
+## BACKLOG
+
+Planned work, ready to execute. Top = highest priority.
+
+- [ ] #002 Define project scope and requirements #RM1
 
 ---
 
 ## NOW
 
-- [ ] Define project scope and requirements
+Active work this cycle.
 
-## BACKLOG
+(No active items)
 
-- [ ] (items to be added)
+---
 
 ## DONE
 
-- [x] Project initialization [2026-01-15]
+Completed work (date in parentheses).
+
+- [x] #001 Project initialization (2026-01-15) #RM1
+
+---
+
+*Last updated: 2026-02-01*

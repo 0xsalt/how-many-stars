@@ -1,0 +1,44 @@
+services:
+  app:
+    build: .
+    image: how-many-stars:local
+    container_name: pai-how-many-stars-app
+    environment:
+      - PORT=3000
+      - USE_TLS=false
+    restart: unless-stopped
+    networks:
+      - how-many-stars-internal
+    healthcheck:
+      test: ["CMD", "bun", "-e", "fetch('http://localhost:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  nginx:
+    image: nginx:alpine
+    container_name: pai-how-many-stars
+    depends_on: [app]
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    ports:
+      - "8083:443"
+    restart: unless-stopped
+    networks:
+      - how-many-stars-internal
+      - pai-internal
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsk https://localhost:443/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  how-many-stars-internal:
+    driver: bridge
+  pai-internal:
+    name: pai-internal
+    external: true

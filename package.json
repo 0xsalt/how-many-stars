@@ -1,0 +1,9 @@
+{
+  "name": "how-many-stars",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun run --watch src/server.ts",
+    "start": "bun run src/server.ts"
+  }
+}
