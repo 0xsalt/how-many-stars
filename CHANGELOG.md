@@ -8,7 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Initial project setup
+- GitHub stars dashboard with Bun HTTP server
+- GitHub API client to fetch public repositories
+- Dashboard UI showing repos sorted by star count
+- Total stars display
 
 ## [0.1.0-alpha] - 2026-01-15
 
