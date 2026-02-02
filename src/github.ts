@@ -19,6 +19,7 @@ const GITHUB_API = "https://api.github.com";
 const USERNAME = "0xsalt";
 
 export async function fetchRepos(): Promise<Repo[]> {
+  const RATE_LIMIT_STATUS = [403, 429];
   const repos: Repo[] = [];
   let page = 1;
   const perPage = 100;
@@ -33,6 +34,16 @@ export async function fetchRepos(): Promise<Repo[]> {
     });
 
     if (!response.ok) {
+      if (RATE_LIMIT_STATUS.includes(response.status)) {
+        const resetHeader = response.headers.get("x-ratelimit-reset");
+        const resetTime = resetHeader
+          ? new Date(parseInt(resetHeader) * 1000).toLocaleTimeString()
+          : "unknown";
+        throw new Error(
+          `GitHub API rate limit exceeded. Resets at ${resetTime}. ` +
+            `Unauthenticated requests are limited to 60/hour.`
+        );
+      }
       throw new Error(`GitHub API error: ${response.status}`);
     }
 

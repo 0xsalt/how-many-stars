@@ -118,24 +118,58 @@
         totalStarsEl.textContent = `Total Stars: ${data.totalStars}`;
 
         if (data.repos.length === 0) {
-          content.innerHTML = '<div class="no-repos">No public repositories found</div>';
+          content.textContent = "";
+          const noRepos = document.createElement("div");
+          noRepos.className = "no-repos";
+          noRepos.textContent = "No public repositories found";
+          content.appendChild(noRepos);
           return;
         }
 
-        content.innerHTML = '<div class="repo-list">' +
-          data.repos.map(repo => `
-            <div class="repo-card">
-              <div class="repo-header">
-                <a href="${repo.html_url}" target="_blank" rel="noopener" class="repo-name">${repo.name}</a>
-                <span class="star-count">${repo.stargazers_count}</span>
-              </div>
-              ${repo.description ? `<p class="repo-description">${repo.description}</p>` : ''}
-            </div>
-          `).join("") +
-          '</div>';
+        content.textContent = "";
+        const repoList = document.createElement("div");
+        repoList.className = "repo-list";
+
+        for (const repo of data.repos) {
+          const card = document.createElement("div");
+          card.className = "repo-card";
+
+          const header = document.createElement("div");
+          header.className = "repo-header";
+
+          const link = document.createElement("a");
+          link.href = repo.html_url;
+          link.target = "_blank";
+          link.rel = "noopener";
+          link.className = "repo-name";
+          link.textContent = repo.name;
+
+          const stars = document.createElement("span");
+          stars.className = "star-count";
+          stars.textContent = repo.stargazers_count;
+
+          header.appendChild(link);
+          header.appendChild(stars);
+          card.appendChild(header);
+
+          if (repo.description) {
+            const desc = document.createElement("p");
+            desc.className = "repo-description";
+            desc.textContent = repo.description;
+            card.appendChild(desc);
+          }
+
+          repoList.appendChild(card);
+        }
+
+        content.appendChild(repoList);
 
       } catch (error) {
-        content.innerHTML = `<div class="error">Error: ${error.message}</div>`;
+        content.textContent = "";
+        const errorDiv = document.createElement("div");
+        errorDiv.className = "error";
+        errorDiv.textContent = `Error: ${error.message}`;
+        content.appendChild(errorDiv);
       }
     }
 

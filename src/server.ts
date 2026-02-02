@@ -9,8 +9,8 @@ const server = Bun.serve({
   port: PORT,
   ...(useTls && {
     tls: {
-      key: Bun.file(`${CERTS_DIR}tailscale.key`),
-      cert: Bun.file(`${CERTS_DIR}tailscale.crt`),
+      key: Bun.file(`${CERTS_DIR}server.key`),
+      cert: Bun.file(`${CERTS_DIR}server.crt`),
     },
   }),
   async fetch(req) {
