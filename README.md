@@ -3,7 +3,9 @@
 [![Version](https://img.shields.io/badge/version-0.1.0--alpha-blue.svg)](CHANGELOG.md)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Local web dashboard showing GitHub star counts for all public 0xsalt repositories, sorted by popularity.
+Live: **https://0xsalt.github.io/how-many-stars/**
+
+Web dashboard showing GitHub star counts for all public 0xsalt repositories, sorted by popularity.
 
 ## Usage
 

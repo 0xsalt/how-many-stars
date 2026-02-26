@@ -40,7 +40,12 @@ certs/
 # Private documentation
 docs/internal/
 
+# PAI private journal (NEVER commit to public repos)
+.private-journal/
+
 # Misc
 *.tgz
 *.tar.gz
 .cache/
+
+.state/

@@ -577,7 +577,7 @@
         page++;
       }
       repos.sort(function(a, b) { return b.stargazers_count - a.stargazers_count; });
-      var totalStars = repos.reduce(function(s, r) { return s + r.stargazers_count; }, 0);
+      const totalStars = repos.reduce(function(s, r) { return s + r.stargazers_count; }, 0);
       return { repos: repos, totalStars: totalStars };
     }
 
