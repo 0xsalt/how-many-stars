@@ -4,108 +4,544 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>0xsalt GitHub Stars</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><polygon points='50,5 63,35 97,40 72,62 78,95 50,80 22,95 28,62 3,40 37,35' fill='%23f0c14b'/></svg>">
   <style>
+    /* ── Custom Properties ── */
+    :root {
+      --gold: #f0c14b;
+      --gold-dim: #c9a227;
+      --gold-bg: rgba(240, 193, 75, 0.08);
+      --gold-glow: rgba(240, 193, 75, 0.25);
+      --orange: #e8a317;
+      --blue: #58a6ff;
+      --blue-dim: #388bfd;
+      --blue-glow: rgba(56, 139, 253, 0.15);
+      --bg-body: #0d1117;
+      --bg-card: #161b22;
+      --bg-card-hover: #1c2129;
+      --border: #30363d;
+      --border-hover: #484f58;
+      --text-primary: #e6edf3;
+      --text-secondary: #8b949e;
+      --text-muted: #6e7681;
+      --red: #f85149;
+      --red-bg: rgba(248, 81, 73, 0.1);
+      --shimmer-base: #21262d;
+      --shimmer-highlight: #30363d;
+    }
+
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      background: #0d1117;
-      color: #c9d1d9;
-      padding: 2rem;
+      background: var(--bg-body);
+      color: var(--text-primary);
+      padding: clamp(1rem, 4vw, 2.5rem);
       min-height: 100vh;
+      background-image:
+        radial-gradient(ellipse 60% 40% at 50% 0%, rgba(56, 139, 253, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 50% at 80% 100%, rgba(240, 193, 75, 0.04) 0%, transparent 60%);
     }
+
+    /* ── Container ── */
     .container {
       max-width: 800px;
       margin: 0 auto;
     }
+
+    /* ── Header / Hero ── */
     header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 2.5rem;
+      position: relative;
+      overflow: hidden;
+      padding: 2rem 1rem 1.5rem;
     }
-    h1 {
-      color: #58a6ff;
-      font-size: 2rem;
+
+    .hero-glow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, var(--gold-glow) 0%, transparent 70%);
+      pointer-events: none;
+      opacity: 0;
+      animation: glowFadeIn 1.5s ease-out 0.3s forwards;
+    }
+
+    .hero-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      opacity: 0;
+      animation: fadeSlideIn 0.6s ease-out 0.1s forwards;
+    }
+
+    .hero-star-count {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4em;
       margin-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeSlideIn 0.6s ease-out 0.25s forwards;
     }
-    .total-stars {
-      font-size: 1.5rem;
-      color: #f0c14b;
+
+    .hero-star-icon {
+      width: clamp(2rem, 6vw, 3rem);
+      height: clamp(2rem, 6vw, 3rem);
+      fill: var(--gold);
+      filter: drop-shadow(0 0 8px var(--gold-glow));
+      animation: starPulse 3s ease-in-out infinite;
     }
-    .loading, .error {
-      text-align: center;
-      padding: 2rem;
-      font-size: 1.2rem;
+
+    .hero-number {
+      font-size: clamp(3rem, 10vw, 5.5rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: var(--gold);
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 40px var(--gold-glow);
     }
-    .error {
-      color: #f85149;
+
+    .hero-descriptor {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      opacity: 0;
+      animation: fadeSlideIn 0.6s ease-out 0.4s forwards;
     }
+
+    .star-field {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .star-dot {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: var(--gold);
+      animation: twinkle var(--dur) ease-in-out var(--delay) infinite;
+    }
+
+    /* ── Repo List ── */
     .repo-list {
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 0.75rem;
     }
+
+    /* ── Repo Card ── */
     .repo-card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 8px;
+      background: linear-gradient(135deg, var(--bg-card) 0%, #181d25 100%);
+      border: 1px solid var(--border);
+      border-radius: 10px;
       padding: 1rem 1.25rem;
-      transition: border-color 0.2s;
+      border-left: 3px solid transparent;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      opacity: 0;
+      transform: translateY(12px);
+      position: relative;
+      overflow: hidden;
     }
+
+    .repo-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.35s ease-out, transform 0.35s ease-out,
+                  box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+
     .repo-card:hover {
-      border-color: #58a6ff;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 0 1px var(--blue-glow);
+      border-color: var(--border-hover);
     }
+
+    .repo-card.tier-gold {
+      border-left-color: var(--gold);
+    }
+    .repo-card.tier-gold:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), 0 0 12px var(--gold-glow);
+    }
+
+    .repo-card.tier-silver {
+      border-left-color: var(--orange);
+    }
+
+    /* ── Star Bar ── */
+    .star-bar {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--gold) 0%, var(--orange) 100%);
+      border-radius: 0 3px 0 0;
+      width: 0;
+      transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .repo-card.visible .star-bar {
+      width: var(--star-pct);
+      transition-delay: 0.3s;
+    }
+
+    /* ── Card Header ── */
     .repo-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.35rem;
+      gap: 0.75rem;
     }
+
     .repo-name {
-      color: #58a6ff;
+      color: var(--blue);
       text-decoration: none;
       font-weight: 600;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
-    .repo-name:hover {
-      text-decoration: underline;
+
+    .repo-name::after {
+      content: "";
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--blue);
+      transition: width 0.25s ease;
     }
-    .star-count {
-      color: #f0c14b;
-      font-weight: 500;
+
+    .repo-name:hover::after {
+      width: 100%;
+    }
+
+    /* ── Star Badge ── */
+    .star-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3em;
+      background: var(--gold-bg);
+      color: var(--gold);
+      font-weight: 600;
+      font-size: 0.85rem;
+      font-variant-numeric: tabular-nums;
+      padding: 0.2em 0.6em;
+      border-radius: 999px;
+      white-space: nowrap;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .star-badge svg {
+      width: 0.9em;
+      height: 0.9em;
+      fill: currentColor;
+    }
+
+    .star-badge.tier-gold {
+      background: rgba(240, 193, 75, 0.15);
+    }
+
+    .star-badge.tier-silver {
+      color: var(--orange);
+      background: rgba(232, 163, 23, 0.1);
+    }
+
+    /* Sparkle for rank 1 */
+    .star-badge.rank-1::after {
+      content: "";
+      position: absolute;
+      top: -2px;
+      right: -2px;
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      animation: sparkle 1.5s ease-in-out infinite;
+    }
+
+    /* ── Description ── */
+    .repo-description {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      line-height: 1.5;
+      margin-bottom: 0.35rem;
+    }
+
+    /* ── Meta Row ── */
+    .repo-meta {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.75rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.25rem;
     }
-    .repo-description {
-      color: #8b949e;
-      font-size: 0.9rem;
-      line-height: 1.4;
+
+    .repo-meta .updated {
+      display: flex;
+      align-items: center;
+      gap: 0.3em;
     }
-    .no-repos {
+
+    .repo-meta .updated svg {
+      width: 0.85em;
+      height: 0.85em;
+      fill: currentColor;
+    }
+
+    /* ── Skeleton Loading ── */
+    .skeleton-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .skeleton-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skeleton-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg,
+        transparent 0%,
+        var(--shimmer-highlight) 50%,
+        transparent 100%
+      );
+      animation: shimmer 1.5s ease-in-out infinite;
+    }
+
+    .skeleton-line {
+      background: var(--shimmer-base);
+      border-radius: 4px;
+      height: 14px;
+    }
+
+    .skeleton-line.title { width: 40%; height: 16px; margin-bottom: 0.6rem; }
+    .skeleton-line.desc { width: 75%; margin-bottom: 0.4rem; }
+    .skeleton-line.meta { width: 25%; height: 10px; }
+
+    .skeleton-badge {
+      position: absolute;
+      top: 1rem;
+      right: 1.25rem;
+      width: 50px;
+      height: 22px;
+      background: var(--shimmer-base);
+      border-radius: 999px;
+    }
+
+    /* ── Empty State ── */
+    .empty-state {
       text-align: center;
-      color: #8b949e;
-      padding: 2rem;
+      padding: 3rem 1rem;
+      color: var(--text-muted);
+    }
+
+    .empty-state svg {
+      width: 3rem;
+      height: 3rem;
+      fill: var(--text-muted);
+      opacity: 0.4;
+      margin-bottom: 1rem;
+    }
+
+    /* ── Error State ── */
+    .error-box {
+      text-align: center;
+      padding: 1.5rem;
+      color: var(--red);
+      background: var(--red-bg);
+      border: 1px solid rgba(248, 81, 73, 0.25);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.75rem;
+    }
+
+    /* ── Animations ── */
+    @keyframes fadeSlideIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes glowFadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes starPulse {
+      0%, 100% { filter: drop-shadow(0 0 8px var(--gold-glow)); }
+      50% { filter: drop-shadow(0 0 16px var(--gold-glow)); }
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.15; }
+      50% { opacity: 0.8; }
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(100%); }
+    }
+
+    @keyframes sparkle {
+      0%, 100% { opacity: 0.3; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.2); }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .star-field { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .repo-card { padding: 0.85rem 1rem; }
+      .repo-name {
+        white-space: normal;
+        overflow: visible;
+      }
+      .repo-header {
+        flex-wrap: wrap;
+      }
+    }
+
+    /* ── Reduced Motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-delay: 0ms !important;
+        transition-duration: 0.01ms !important;
+      }
+      .repo-card {
+        opacity: 1;
+        transform: none;
+      }
+      .repo-card .star-bar {
+        transition: none;
+      }
+      .hero-label, .hero-star-count, .hero-descriptor, .hero-glow {
+        opacity: 1;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
-      <h1>0xsalt Repositories</h1>
-      <div class="total-stars" id="total-stars"></div>
+      <div class="hero-glow"></div>
+      <div class="star-field" id="star-field"></div>
+      <div class="hero-label">0XSALT</div>
+      <div class="hero-star-count">
+        <svg class="hero-star-icon" viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>
+        <span class="hero-number" id="hero-number">—</span>
+      </div>
+      <div class="hero-descriptor">GitHub Stars</div>
     </header>
+
     <main id="content">
-      <div class="loading">Loading repositories...</div>
+      <div class="skeleton-list">
+        <div class="skeleton-card"><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line meta"></div><div class="skeleton-badge"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line meta"></div><div class="skeleton-badge"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line meta"></div><div class="skeleton-badge"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line meta"></div><div class="skeleton-badge"></div></div>
+        <div class="skeleton-card"><div class="skeleton-line title"></div><div class="skeleton-line desc"></div><div class="skeleton-line meta"></div><div class="skeleton-badge"></div></div>
+      </div>
     </main>
+
+    <footer>Repos sorted by stargazer count. Data from GitHub API.</footer>
   </div>
 
   <script>
+    // ── Star Field ──
+    (function initStarField() {
+      const field = document.getElementById("star-field");
+      if (!field) return;
+      for (let i = 0; i < 25; i++) {
+        const dot = document.createElement("span");
+        dot.className = "star-dot";
+        dot.style.left = Math.random() * 100 + "%";
+        dot.style.top = Math.random() * 100 + "%";
+        dot.style.setProperty("--dur", (2 + Math.random() * 3).toFixed(1) + "s");
+        dot.style.setProperty("--delay", (Math.random() * 4).toFixed(1) + "s");
+        field.appendChild(dot);
+      }
+    })();
+
+    // ── Animated Count-Up ──
+    function animateCount(el, target, duration) {
+      if (target === 0) { el.textContent = "0"; return; }
+      const start = performance.now();
+      function tick(now) {
+        const t = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3); // easeOutCubic
+        el.textContent = Math.round(ease * target).toLocaleString();
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    // ── Relative Time ──
+    function relativeTime(dateStr) {
+      const diff = Date.now() - new Date(dateStr).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return "just now";
+      if (mins < 60) return mins + "m ago";
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + "h ago";
+      const days = Math.floor(hrs / 24);
+      if (days < 30) return days + "d ago";
+      const months = Math.floor(days / 30);
+      if (months < 12) return months + "mo ago";
+      return Math.floor(months / 12) + "y ago";
+    }
+
+    // ── Star SVG (inline) ──
+    const starSVG = '<svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>';
+    const clockSVG = '<svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.2"/><path d="M8 4.5V8l2.5 1.5" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>';
+
+    // ── Main ──
     async function loadRepos() {
       const content = document.getElementById("content");
-      const totalStarsEl = document.getElementById("total-stars");
+      const heroNumber = document.getElementById("hero-number");
 
       try {
         const response = await fetch("/api/repos");
@@ -115,25 +551,40 @@
           throw new Error(data.error);
         }
 
-        totalStarsEl.textContent = `Total Stars: ${data.totalStars}`;
+        // Hero count-up
+        animateCount(heroNumber, data.totalStars, 1200);
+        document.title = data.totalStars + " Stars \u2013 0xsalt";
 
         if (data.repos.length === 0) {
-          content.textContent = "";
-          const noRepos = document.createElement("div");
-          noRepos.className = "no-repos";
-          noRepos.textContent = "No public repositories found";
-          content.appendChild(noRepos);
+          content.innerHTML = "";
+          const empty = document.createElement("div");
+          empty.className = "empty-state";
+          empty.innerHTML = starSVG.replace("<svg", '<svg width="48" height="48"') + "<p>No public repositories found</p>";
+          content.appendChild(empty);
           return;
         }
 
-        content.textContent = "";
+        const maxStars = data.repos[0].stargazers_count || 1;
+        content.innerHTML = "";
         const repoList = document.createElement("div");
         repoList.className = "repo-list";
 
-        for (const repo of data.repos) {
-          const card = document.createElement("div");
-          card.className = "repo-card";
+        data.repos.forEach(function(repo, i) {
+          const pct = Math.max((repo.stargazers_count / maxStars) * 100, 2);
+          const tierClass =
+            pct >= 50 ? "tier-gold" :
+            pct >= 20 ? "tier-silver" : "";
 
+          const card = document.createElement("div");
+          card.className = "repo-card" + (tierClass ? " " + tierClass : "");
+          card.style.setProperty("--star-pct", pct.toFixed(1) + "%");
+
+          // Star bar
+          const bar = document.createElement("div");
+          bar.className = "star-bar";
+          card.appendChild(bar);
+
+          // Header row
           const header = document.createElement("div");
           header.className = "repo-header";
 
@@ -144,14 +595,15 @@
           link.className = "repo-name";
           link.textContent = repo.name;
 
-          const stars = document.createElement("span");
-          stars.className = "star-count";
-          stars.textContent = repo.stargazers_count;
+          const badge = document.createElement("span");
+          badge.className = "star-badge" + (tierClass ? " " + tierClass : "") + (i === 0 ? " rank-1" : "");
+          badge.innerHTML = starSVG + " " + repo.stargazers_count.toLocaleString();
 
           header.appendChild(link);
-          header.appendChild(stars);
+          header.appendChild(badge);
           card.appendChild(header);
 
+          // Description
           if (repo.description) {
             const desc = document.createElement("p");
             desc.className = "repo-description";
@@ -159,16 +611,33 @@
             card.appendChild(desc);
           }
 
+          // Meta row
+          if (repo.updated_at) {
+            const meta = document.createElement("div");
+            meta.className = "repo-meta";
+            const updated = document.createElement("span");
+            updated.className = "updated";
+            updated.innerHTML = clockSVG + " Updated " + relativeTime(repo.updated_at);
+            meta.appendChild(updated);
+            card.appendChild(meta);
+          }
+
           repoList.appendChild(card);
-        }
+
+          // Staggered entrance animation
+          setTimeout(function() {
+            card.classList.add("visible");
+          }, 60 * i);
+        });
 
         content.appendChild(repoList);
 
       } catch (error) {
-        content.textContent = "";
+        content.innerHTML = "";
+        heroNumber.textContent = "—";
         const errorDiv = document.createElement("div");
-        errorDiv.className = "error";
-        errorDiv.textContent = `Error: ${error.message}`;
+        errorDiv.className = "error-box";
+        errorDiv.textContent = "Error: " + error.message;
         content.appendChild(errorDiv);
       }
     }
