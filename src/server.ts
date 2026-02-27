@@ -25,6 +25,10 @@ const server = Bun.serve({
       });
     }
 
+    if (url.pathname === "/api/health") {
+      return Response.json({ status: "ok", service: "how-many-stars" });
+    }
+
     if (url.pathname === "/api/repos") {
       try {
         const repos = await fetchRepos();
