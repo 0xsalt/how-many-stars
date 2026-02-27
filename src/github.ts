@@ -4,6 +4,10 @@ export interface Repo {
   stargazers_count: number;
   html_url: string;
   updated_at: string;
+  language: string | null;
+  forks_count: number;
+  open_issues_count: number;
+  pushed_at: string;
 }
 
 interface GitHubRepo {
@@ -13,6 +17,10 @@ interface GitHubRepo {
   html_url: string;
   updated_at: string;
   fork: boolean;
+  language: string | null;
+  forks_count: number;
+  open_issues_count: number;
+  pushed_at: string;
 }
 
 const GITHUB_API = "https://api.github.com";
@@ -61,6 +69,10 @@ export async function fetchRepos(): Promise<Repo[]> {
           stargazers_count: repo.stargazers_count,
           html_url: repo.html_url,
           updated_at: repo.updated_at,
+          language: repo.language,
+          forks_count: repo.forks_count,
+          open_issues_count: repo.open_issues_count,
+          pushed_at: repo.pushed_at,
         });
       }
     }
