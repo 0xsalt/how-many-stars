@@ -21,7 +21,10 @@ const server = Bun.serve({
         new URL("index.html", import.meta.url).pathname
       ).text();
       return new Response(html, {
-        headers: { "Content-Type": "text/html" },
+        headers: {
+          "Content-Type": "text/html",
+          "Cache-Control": "no-cache, must-revalidate",
+        },
       });
     }
 
@@ -33,7 +36,9 @@ const server = Bun.serve({
       try {
         const repos = await fetchRepos();
         const totalStars = getTotalStars(repos);
-        return Response.json({ repos, totalStars });
+        return Response.json({ repos, totalStars }, {
+          headers: { "Cache-Control": "public, max-age=300" },
+        });
       } catch (error) {
         const message =
           error instanceof Error ? error.message : "Unknown error";
