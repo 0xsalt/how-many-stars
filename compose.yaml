@@ -21,6 +21,7 @@ services:
     container_name: pai-how-many-stars
     depends_on: [app]
     volumes:
+      - ./nginx-main.conf:/etc/nginx/nginx.conf:ro
       - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
       - ./certs:/etc/nginx/certs:ro
     ports:

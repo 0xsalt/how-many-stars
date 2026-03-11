@@ -1,0 +1,42 @@
+---
+id: proj-how-many-stars
+name: How Many Stars
+language: typescript
+tier: 2
+lifecycle_stage: active
+disposition: private
+score: 3.5
+last_assessed: 2026-02-21T00:00:00.000Z
+last_commit: '2026-02-26'
+visibility: private
+tags:
+  - github
+  - utility
+  - analytics
+  - typescript
+repo_path: /home/isecadmin/local/projects/how-many-stars
+---
+
+# How Many Stars
+
+**One-liner:** GitHub star tracker and analytics utility
+
+## Identity
+
+- **Problem Statement**: Manually checking GitHub to see star counts across multiple repositories is tedious and doesn't provide an aggregated view of repository popularity
+- **Target User**: Repository owners and maintainers who want to track engagement metrics across their public GitHub repositories
+- **Origin Story**: Built to provide a quick dashboard view of all public repositories for the 0xsalt GitHub account, sorted by popularity (star count) with total star aggregation
+
+## Technical Profile
+
+- **Stack**: Typescript
+- **Architecture**: Single-page application with Bun-based HTTP server serving static HTML and a REST API endpoint (/api/repos) that fetches and aggregates GitHub repository data; supports optional TLS with certificate-based HTTPS
+- **Dependencies**: None detected
+- **Maturity**: Beta
+
+## Current State
+
+- **Last Active**: 2026-02-26
+- **Known Issues**: GitHub API rate limiting (60 requests/hour for unauthenticated requests), hardcoded username (0xsalt) in source code, no caching mechanism for API responses
+- **Missing Features**: Project scope and requirements not yet defined (see BACKLOG #002), no authentication for higher rate limits, no caching/refresh strategy, no error recovery UI beyond basic error display
+- **Technical Debt**: No test suite, no TypeScript configuration file, no dependency management (relies solely on Bun built-ins), pagination logic could be simplified, no monitoring or observability beyond console logs
