@@ -25,6 +25,7 @@ interface GitHubRepo {
 
 const GITHUB_API = "https://api.github.com";
 const USERNAME = "0xsalt";
+const TOKEN = process.env.GITHUB_TOKEN;
 
 export async function fetchRepos(): Promise<Repo[]> {
   const RATE_LIMIT_STATUS = [403, 429];
@@ -38,6 +39,7 @@ export async function fetchRepos(): Promise<Repo[]> {
       headers: {
         Accept: "application/vnd.github.v3+json",
         "User-Agent": "how-many-stars",
+        ...(TOKEN && { Authorization: `Bearer ${TOKEN}` }),
       },
     });
 
