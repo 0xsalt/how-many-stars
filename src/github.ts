@@ -26,8 +26,15 @@ interface GitHubRepo {
 const GITHUB_API = "https://api.github.com";
 const USERNAME = "0xsalt";
 const TOKEN = process.env.GITHUB_TOKEN;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+
+let cache: { data: Repo[]; timestamp: number } | null = null;
 
 export async function fetchRepos(): Promise<Repo[]> {
+  if (cache && Date.now() - cache.timestamp < CACHE_TTL_MS) {
+    return cache.data;
+  }
+
   const RATE_LIMIT_STATUS = [403, 429];
   const repos: Repo[] = [];
   let page = 1;
@@ -89,6 +96,7 @@ export async function fetchRepos(): Promise<Repo[]> {
   // Sort by stars descending
   repos.sort((a, b) => b.stargazers_count - a.stargazers_count);
 
+  cache = { data: repos, timestamp: Date.now() };
   return repos;
 }
 
