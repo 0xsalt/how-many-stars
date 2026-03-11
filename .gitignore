@@ -49,3 +49,7 @@ docs/internal/
 .cache/
 
 .state/
+
+# Nginx configs (deployment-specific, contain host-specific settings)
+nginx.conf
+nginx-main.conf

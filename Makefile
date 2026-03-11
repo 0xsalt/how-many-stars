@@ -31,7 +31,7 @@ HEALTH_PATH   := /api/health
 # --- Primary targets ---
 
 dev: stop _find_port _start _tailscale _health _register  ## Kill existing, allocate port, start, publish
-	@echo "$(SERVICE_NAME) running on port $$(cat $(PORT_FILE)) → https://REDACTED-HOST:$(EXTERNAL_PORT)"
+	@echo "$(SERVICE_NAME) running on port $$(cat $(PORT_FILE))"
 
 stop:  ## Gracefully stop the server
 	@mkdir -p $(STATE_DIR)

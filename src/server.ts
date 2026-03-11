@@ -48,5 +48,5 @@ const server = Bun.serve({
 const protocol = useTls ? "https" : "http";
 console.log(`Server running at ${protocol}://localhost:${server.port}`);
 if (useTls) {
-  console.log(`Tailscale: https://REDACTED-HOST:${server.port}`);
+  console.log(`Tailscale: https://${process.env.TAILSCALE_HOST || 'localhost'}:${server.port}`);
 }
