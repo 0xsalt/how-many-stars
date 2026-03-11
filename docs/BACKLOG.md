@@ -13,9 +13,6 @@
 
 ## BACKLOG
 
-- [ ] #005 Add GITHUB_TOKEN env var for authenticated API requests #feature #RM1
-- [ ] #006 Add Cache-Control headers to HTML and API responses #feature #RM3
-- [ ] #007 Server-side cache with 5min TTL for /api/repos #feature #RM1
 - [ ] #008 Make GitHub username configurable via env var #feature #RM1
 - [ ] #009 Add language breakdown and portfolio stats summary #feature #RM1
 - [ ] #010 Add unit tests for GitHub API client #testing #RM3
@@ -33,6 +30,9 @@
 
 ## DONE
 
+- [x] #007 Server-side cache with 5min TTL for /api/repos _done:2026-03-11 #feature #RM1
+- [x] #006 Add Cache-Control headers to HTML and API responses _done:2026-03-11 #feature #RM3
+- [x] #005 Add GITHUB_TOKEN env var for authenticated API requests _done:2026-03-11 #feature #RM1
 - [x] #013 Remove Tailscale hostnames from tracked files _done:2026-03-11 #bug #major #security
 - [x] #011 Security audit all public repos for leaked secrets and internal content _done:2026-03-11 #security #critical
 - [x] #003 Fix stale hostname in server.ts log output _done:2026-03-10 #bug #minor
