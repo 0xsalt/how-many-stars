@@ -1,5 +1,5 @@
 import { describe, test, expect, beforeEach, mock } from "bun:test";
-import { fetchRepos, getTotalStars, clearCache, USERNAME, type Repo } from "./github";
+import { fetchRepos, getTotalStars, getLanguageBreakdown, clearCache, USERNAME, type Repo } from "./github";
 
 function makeGitHubRepo(overrides: Record<string, unknown> = {}) {
   return {
@@ -13,6 +13,9 @@ function makeGitHubRepo(overrides: Record<string, unknown> = {}) {
     forks_count: 1,
     open_issues_count: 0,
     pushed_at: "2026-01-01T00:00:00Z",
+    topics: [],
+    archived: false,
+    homepage: null,
     ...overrides,
   };
 }
@@ -28,6 +31,9 @@ function makeRepo(overrides: Partial<Repo> = {}): Repo {
     forks_count: 1,
     open_issues_count: 0,
     pushed_at: "2026-01-01T00:00:00Z",
+    topics: [],
+    archived: false,
+    homepage: null,
     ...overrides,
   };
 }
@@ -209,5 +215,66 @@ describe("fetchRepos", () => {
 
     await fetchRepos();
     expect(capturedUrl).toContain(`/users/${USERNAME}/repos`);
+  });
+
+  test("maps topics, archived, and homepage fields", async () => {
+    const mockRepos = [
+      makeGitHubRepo({
+        name: "tagged",
+        topics: ["typescript", "cli"],
+        archived: true,
+        homepage: "https://example.com",
+      }),
+    ];
+
+    globalThis.fetch = mock(() =>
+      Promise.resolve(new Response(JSON.stringify(mockRepos), { status: 200 }))
+    );
+
+    const repos = await fetchRepos();
+    expect(repos[0].topics).toEqual(["typescript", "cli"]);
+    expect(repos[0].archived).toBe(true);
+    expect(repos[0].homepage).toBe("https://example.com");
+  });
+});
+
+// ── getLanguageBreakdown ──
+
+describe("getLanguageBreakdown", () => {
+  test("returns empty array for no repos", () => {
+    expect(getLanguageBreakdown([])).toEqual([]);
+  });
+
+  test("counts repos per language", () => {
+    const repos = [
+      makeRepo({ language: "TypeScript" }),
+      makeRepo({ language: "TypeScript" }),
+      makeRepo({ language: "Go" }),
+    ];
+    const result = getLanguageBreakdown(repos);
+    expect(result[0]).toEqual({ language: "TypeScript", count: 2 });
+    expect(result[1]).toEqual({ language: "Go", count: 1 });
+  });
+
+  test("sorts by count descending", () => {
+    const repos = [
+      makeRepo({ language: "Go" }),
+      makeRepo({ language: "Python" }),
+      makeRepo({ language: "Python" }),
+      makeRepo({ language: "Python" }),
+      makeRepo({ language: "Go" }),
+    ];
+    const result = getLanguageBreakdown(repos);
+    expect(result[0].language).toBe("Python");
+    expect(result[1].language).toBe("Go");
+  });
+
+  test("groups null language as Unknown", () => {
+    const repos = [
+      makeRepo({ language: null }),
+      makeRepo({ language: null }),
+    ];
+    const result = getLanguageBreakdown(repos);
+    expect(result[0]).toEqual({ language: "Unknown", count: 2 });
   });
 });

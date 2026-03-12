@@ -8,6 +8,9 @@ export interface Repo {
   forks_count: number;
   open_issues_count: number;
   pushed_at: string;
+  topics: string[];
+  archived: boolean;
+  homepage: string | null;
 }
 
 interface GitHubRepo {
@@ -21,6 +24,9 @@ interface GitHubRepo {
   forks_count: number;
   open_issues_count: number;
   pushed_at: string;
+  topics: string[];
+  archived: boolean;
+  homepage: string | null;
 }
 
 const GITHUB_API = "https://api.github.com";
@@ -86,6 +92,9 @@ export async function fetchRepos(): Promise<Repo[]> {
           forks_count: repo.forks_count,
           open_issues_count: repo.open_issues_count,
           pushed_at: repo.pushed_at,
+          topics: repo.topics || [],
+          archived: repo.archived || false,
+          homepage: repo.homepage ?? null,
         });
       }
     }
@@ -106,4 +115,17 @@ export async function fetchRepos(): Promise<Repo[]> {
 
 export function getTotalStars(repos: Repo[]): number {
   return repos.reduce((sum, repo) => sum + repo.stargazers_count, 0);
+}
+
+export function getLanguageBreakdown(
+  repos: Repo[]
+): { language: string; count: number }[] {
+  const counts: Record<string, number> = {};
+  for (const repo of repos) {
+    const lang = repo.language || "Unknown";
+    counts[lang] = (counts[lang] || 0) + 1;
+  }
+  return Object.entries(counts)
+    .map(([language, count]) => ({ language, count }))
+    .sort((a, b) => b.count - a.count);
 }

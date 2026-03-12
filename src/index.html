@@ -879,6 +879,89 @@
         transform: none;
       }
     }
+
+    /* ── Language Breakdown Bar ── */
+    .lang-breakdown {
+      max-width: 720px;
+      margin: var(--space-lg) auto;
+      padding: 0 var(--space-lg);
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.4s, transform 0.4s;
+    }
+    .lang-breakdown.visible {
+      opacity: 1;
+      transform: none;
+    }
+    .lang-breakdown-bar {
+      display: flex;
+      height: 8px;
+      border-radius: 4px;
+      overflow: hidden;
+      background: var(--bg-card);
+      gap: 2px;
+    }
+    .lang-breakdown-bar .lang-segment {
+      height: 100%;
+      border-radius: 2px;
+      transition: flex-basis 0.6s ease;
+    }
+    .lang-breakdown-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-sm) var(--space-lg);
+      margin-top: var(--space-sm);
+      font-size: var(--text-xs);
+      color: var(--text-secondary);
+    }
+    .lang-breakdown-legend .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .lang-breakdown-legend .legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Topic Badges ── */
+    .topic-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin-top: var(--space-xs);
+    }
+    .topic-badge {
+      font-size: var(--text-xs);
+      padding: 1px 8px;
+      border-radius: 12px;
+      background: var(--blue-glow);
+      color: var(--blue);
+      border: 1px solid rgba(56, 139, 253, 0.2);
+      white-space: nowrap;
+    }
+
+    /* ── Archived Card ── */
+    .repo-card.archived {
+      opacity: 0.55;
+    }
+    .archived-badge {
+      font-size: var(--text-xs);
+      padding: 1px 8px;
+      border-radius: 12px;
+      background: var(--red-bg);
+      color: var(--red);
+      border: 1px solid rgba(248, 81, 73, 0.2);
+      margin-left: var(--space-sm);
+    }
+
+    /* ── Generated Description ── */
+    .repo-description.generated {
+      font-style: italic;
+      color: var(--text-muted);
+    }
   </style>
 </head>
 <body>
@@ -896,6 +979,12 @@
 
     <!-- Phase 2: Summary Stats Bar -->
     <div class="stats-bar" id="stats-bar"></div>
+
+    <!-- Language Breakdown Bar -->
+    <div class="lang-breakdown" id="lang-breakdown" style="display: none;">
+      <div class="lang-breakdown-bar" id="lang-breakdown-bar"></div>
+      <div class="lang-breakdown-legend" id="lang-breakdown-legend"></div>
+    </div>
 
     <!-- Phase 3: Search + Filters + Phase 5: View Toggle -->
     <div class="toolbar" id="toolbar" style="display: none;">
@@ -1085,7 +1174,10 @@
               language: r.language,
               forks_count: r.forks_count || 0,
               open_issues_count: r.open_issues_count || 0,
-              pushed_at: r.pushed_at || r.updated_at
+              pushed_at: r.pushed_at || r.updated_at,
+              topics: r.topics || [],
+              archived: r.archived || false,
+              homepage: r.homepage || null
             });
           }
         }
@@ -1138,6 +1230,53 @@
       });
     }
 
+    // ── Language Breakdown Bar ──
+    function renderLanguageBreakdown(repos) {
+      var wrapper = document.getElementById("lang-breakdown");
+      var bar = document.getElementById("lang-breakdown-bar");
+      var legend = document.getElementById("lang-breakdown-legend");
+      var counts = {};
+      for (var i = 0; i < repos.length; i++) {
+        var lang = repos[i].language || "Unknown";
+        counts[lang] = (counts[lang] || 0) + 1;
+      }
+      var sorted = Object.keys(counts).sort(function(a, b) { return counts[b] - counts[a]; });
+      var total = repos.length;
+
+      bar.innerHTML = "";
+      legend.innerHTML = "";
+      for (var j = 0; j < sorted.length; j++) {
+        var lang = sorted[j];
+        var pct = (counts[lang] / total) * 100;
+        var color = LANG_COLORS[lang] || "#8b949e";
+
+        var seg = document.createElement("div");
+        seg.className = "lang-segment";
+        seg.style.flexBasis = pct.toFixed(1) + "%";
+        seg.style.background = color;
+        seg.title = lang + ": " + counts[lang] + " repo" + (counts[lang] > 1 ? "s" : "");
+        bar.appendChild(seg);
+
+        var item = document.createElement("span");
+        item.className = "legend-item";
+        item.innerHTML = '<span class="legend-dot" style="background:' + color + '"></span>' + esc(lang) + ' <span style="color:var(--text-muted)">' + counts[lang] + '</span>';
+        legend.appendChild(item);
+      }
+
+      wrapper.style.display = "";
+      requestAnimationFrame(function() { wrapper.classList.add("visible"); });
+    }
+
+    // ── Generate Fallback Description ──
+    function generateDescription(repo) {
+      var parts = [];
+      if (repo.language) parts.push(repo.language);
+      if (repo.stargazers_count > 0) parts.push(repo.stargazers_count + " stars");
+      if (repo.topics && repo.topics.length > 0) parts.push(repo.topics.slice(0, 3).join(", "));
+      if (parts.length === 0) return repo.name.replace(/[-_]/g, " ");
+      return parts.join(" \u00b7 ");
+    }
+
     // ── Phase 3: Populate Language Filter ──
     function populateLanguageFilter(repos) {
       var langs = {};
@@ -1165,7 +1304,7 @@
 
       return allRepos.filter(function(repo) {
         if (query) {
-          var searchable = (repo.name + " " + (repo.description || "") + " " + (repo.language || "")).toLowerCase();
+          var searchable = (repo.name + " " + (repo.description || "") + " " + (repo.language || "") + " " + (repo.topics || []).join(" ")).toLowerCase();
           if (searchable.indexOf(query) === -1) return false;
         }
         if (lang && repo.language !== lang) return false;
@@ -1197,7 +1336,7 @@
         var tierClass = getTier(repo) === "gold" ? "tier-gold" : getTier(repo) === "silver" ? "tier-silver" : "";
 
         var card = document.createElement("div");
-        card.className = "repo-card" + (tierClass ? " " + tierClass : "");
+        card.className = "repo-card" + (tierClass ? " " + tierClass : "") + (repo.archived ? " archived" : "");
         card.style.setProperty("--star-pct", pct.toFixed(1) + "%");
 
         // Star bar
@@ -1223,14 +1362,32 @@
 
         hdr.appendChild(link);
         hdr.appendChild(badge);
+        if (repo.archived) {
+          var archBadge = document.createElement("span");
+          archBadge.className = "archived-badge";
+          archBadge.textContent = "Archived";
+          hdr.appendChild(archBadge);
+        }
         card.appendChild(hdr);
 
-        // Description
-        if (repo.description) {
-          var desc = document.createElement("p");
-          desc.className = "repo-description";
-          desc.textContent = repo.description;
-          card.appendChild(desc);
+        // Description (with fallback for null)
+        var descText = repo.description || generateDescription(repo);
+        var desc = document.createElement("p");
+        desc.className = "repo-description" + (repo.description ? "" : " generated");
+        desc.textContent = descText;
+        card.appendChild(desc);
+
+        // Topic badges
+        if (repo.topics.length > 0) {
+          var topicList = document.createElement("div");
+          topicList.className = "topic-list";
+          for (var t = 0; t < repo.topics.length; t++) {
+            var topicBadge = document.createElement("span");
+            topicBadge.className = "topic-badge";
+            topicBadge.textContent = repo.topics[t];
+            topicList.appendChild(topicBadge);
+          }
+          card.appendChild(topicList);
         }
 
         // Meta row (Phase 4: enhanced)
@@ -1448,8 +1605,9 @@
         allRepos = data.repos;
         maxStars = allRepos[0].stargazers_count || 1;
 
-        // Phase 2: Stats bar
+        // Phase 2: Stats bar + language breakdown
         renderStatsBar(allRepos);
+        renderLanguageBreakdown(allRepos);
 
         // Phase 3: Populate language filter + show toolbar
         populateLanguageFilter(allRepos);
