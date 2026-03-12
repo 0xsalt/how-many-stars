@@ -11,8 +11,6 @@
 
 ## NOW
 
-- [/] #012 Research portfolio enrichment data signals #feature #RM1
-
 ## BACKLOG
 
 - [ ] #017 Extract monolithic index.html into separate CSS and JS files #architecture #RM3
@@ -30,6 +28,7 @@
 
 ## DONE
 
+- [x] #012 Portfolio enrichment data signals _done:2026-03-11 #feature #RM1
 - [x] #016 Add security headers to Bun server responses _done:2026-03-11 #security #RM3
 - [x] #010 Add unit tests for GitHub API client _done:2026-03-11 #testing #RM3
 - [x] #008 Make GitHub username configurable via env var _done:2026-03-11 #feature #RM1
