@@ -5,7 +5,7 @@
 
 ---
 
-## Next Available: #015
+## Next Available: #018
 
 ---
 
@@ -13,10 +13,11 @@
 
 ## BACKLOG
 
-- [ ] #008 Make GitHub username configurable via env var #feature #RM1
-- [ ] #009 Add language breakdown and portfolio stats summary #feature #RM1
 - [ ] #010 Add unit tests for GitHub API client #testing #RM3
-- [ ] #012 Council debate + explore projects-catalog data signals to enrich stars page as public portfolio #feature #RM1
+- [ ] #012 Council debate + explore data signals (incl. language breakdown) to enrich stars page as portfolio #feature #RM1
+- [ ] #015 Pin Bun version and add multi-stage Docker build #security #RM3
+- [ ] #016 Add security headers to Bun server responses #security #RM3
+- [ ] #017 Extract monolithic index.html into separate CSS and JS files #architecture #RM3
 
 ---
 
@@ -30,6 +31,7 @@
 
 ## DONE
 
+- [x] #008 Make GitHub username configurable via env var _done:2026-03-11 #feature #RM1
 - [x] #007 Server-side cache with 5min TTL for /api/repos _done:2026-03-11 #feature #RM1
 - [x] #006 Add Cache-Control headers to HTML and API responses _done:2026-03-11 #feature #RM3
 - [x] #005 Add GITHUB_TOKEN env var for authenticated API requests _done:2026-03-11 #feature #RM1
@@ -39,6 +41,7 @@
 - [x] #001 Project initialization _done:2026-01-15 #ops
 - [-] #004 Align default port — rejected, reverted #bug #minor
 - [-] #002 Define project scope — superseded by working code #ops
+- [-] #009 Merged into #012 #feature
 - [-] #014 Merged into #012 #feature
 
 ---
