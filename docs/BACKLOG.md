@@ -11,12 +11,12 @@
 
 ## NOW
 
+- [/] #012 Research portfolio enrichment data signals #feature #RM1
+
 ## BACKLOG
 
-- [ ] #012 Council debate + explore data signals (incl. language breakdown) to enrich stars page as portfolio #feature #RM1
-- [ ] #015 Pin Bun version and add multi-stage Docker build #security #RM3
-- [ ] #016 Add security headers to Bun server responses #security #RM3
 - [ ] #017 Extract monolithic index.html into separate CSS and JS files #architecture #RM3
+- [ ] #015 Pin Bun version and add multi-stage Docker build #security #RM3
 
 ---
 
@@ -30,6 +30,7 @@
 
 ## DONE
 
+- [x] #016 Add security headers to Bun server responses _done:2026-03-11 #security #RM3
 - [x] #010 Add unit tests for GitHub API client _done:2026-03-11 #testing #RM3
 - [x] #008 Make GitHub username configurable via env var _done:2026-03-11 #feature #RM1
 - [x] #007 Server-side cache with 5min TTL for /api/repos _done:2026-03-11 #feature #RM1
