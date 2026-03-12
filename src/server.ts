@@ -1,4 +1,4 @@
-import { fetchRepos, getTotalStars } from "./github";
+import { fetchRepos, getTotalStars, USERNAME } from "./github";
 
 const PORT = Number(process.env.PORT) || 3001;
 const CERTS_DIR = new URL("../certs/", import.meta.url).pathname;
@@ -17,9 +17,10 @@ const server = Bun.serve({
     const url = new URL(req.url);
 
     if (url.pathname === "/") {
-      const html = await Bun.file(
+      const raw = await Bun.file(
         new URL("index.html", import.meta.url).pathname
       ).text();
+      const html = raw.replaceAll("0xsalt", USERNAME);
       return new Response(html, {
         headers: {
           "Content-Type": "text/html",

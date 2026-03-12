@@ -24,7 +24,7 @@ interface GitHubRepo {
 }
 
 const GITHUB_API = "https://api.github.com";
-const USERNAME = "0xsalt";
+export const USERNAME = process.env.GITHUB_USERNAME || "0xsalt";
 const TOKEN = process.env.GITHUB_TOKEN;
 const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
