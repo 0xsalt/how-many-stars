@@ -30,6 +30,10 @@ const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
 let cache: { data: Repo[]; timestamp: number } | null = null;
 
+export function clearCache(): void {
+  cache = null;
+}
+
 export async function fetchRepos(): Promise<Repo[]> {
   if (cache && Date.now() - cache.timestamp < CACHE_TTL_MS) {
     return cache.data;
